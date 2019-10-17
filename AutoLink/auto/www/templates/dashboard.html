@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>金合自动化测试集成解决方案</title>
+
+        <meta name="keywords" content="AutoLink, 开源优测, 苦叶子, web ide"/>
+        <meta name="description" content="A Web-based IDE for Auto Testing using Auto Open Source Testing Framework, do your development anytime, anywhere."/>
+        <meta name="author" content="苦叶子">
+        <link rel="stylesheet" href="{{ url_for('static', filename='lib/easyui/themes/bootstrap/easyui.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='lib/easyui/themes/icon.css') }}">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/auto.css') }}">
+
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+        <style type="text/css">
+            .lines-no .datagrid-body td{
+                border-right:1px dotted transparent;
+                border-bottom:1px dotted transparent;
+            }
+        </style>
+    </head>
+    <body class="easyui-layout">
+        <div data-options="region:'north',border:true" style="padding:0;height:60px;">
+            <div class="easyui-panel" style="padding:0">
+                <a href="https://github.com/small99" target="_blank" class="easyui-linkbutton" data-options="plain:true"><img src="{{ url_for('static', filename='img/测试6.jpg') }}" alt="开源优测" style="padding-top:8px;"/></a>
+                <a href="#" onclick="addTab('调度管理', '/scheduler/', 'icon-scheduler')" class="easyui-linkbutton" data-options="iconCls:'icon-scheduler'">调度管理</a>
+                <a href="#" onclick="addTab('系统管理', '/user', 'icon-settings')" class="easyui-linkbutton" data-options="iconCls:'icon-settings'">系统管理</a>
+                <a href="https://github.com/small99/AutoLink/tree/master/docs" target="_blank" class="easyui-linkbutton" data-options="iconCls:'icon-keyword-help'">用户指南</a>
+
+                <!--<a href="https://github.com/small99/AutoLink/blob/master/UPDATEING.md" target="_blank" class="easyui-linkbutton" data-options="iconCls:'icon-update'">更新清单</a>-->
+
+
+                <!--<a href="#" class="easyui-menubutton" data-options="plain:true">源码</a>
+                <a href="#" class="easyui-menubutton" data-options="plain:true">运行</a>
+                <a href="#" class="easyui-menubutton" data-options="plain:true">工具</a>
+                <a href="#" class="easyui-menubutton" data-options="menu:'#file'">文件</a>
+                <a href="#" class="easyui-menubutton" data-options="plain:true, menu:'#mm1'">编辑</a>
+
+                <a href="#" class="easyui-menubutton" data-options="plain:true, menu:'#mm2'">Help</a>
+                <a href="#" class="easyui-menubutton" data-options="plain:true, menu:'#mm3'">About</a></a>-->
+                <a href="#" onclick="do_logout('{{ username }}');" class="easyui-linkbutton" data-options="iconCls:'icon-logout'" style="float:right;margin-top:10px;margin-right:10px;">注销</a>
+            </div>
+            <!--
+            <div id="file" style="width:150px;">
+                <div data-options="iconCls:'icon-undo'">Undo</div>
+                <div data-options="iconCls:'icon-redo'">Redo</div>
+                <div class="menu-sep"></div>
+                <div onclick="do_logout('{{ username }}');" data-options="iconCls:'icon-back'">退出</div>
+            </div>
+
+
+            <div id="mm1" style="width:150px;">
+                <div data-options="iconCls:'icon-undo'">Undo</div>
+                <div data-options="iconCls:'icon-redo'">Redo</div>
+                <div class="menu-sep"></div>
+                <div>Cut</div>
+                <div>Copy</div>
+                <div>Paste</div>
+                <div class="menu-sep"></div>
+                <div>
+                    <span>Toolbar</span>
+                    <div>
+                        <div>Address</div>
+                        <div>Link</div>
+                        <div>Navigation Toolbar</div>
+                        <div>Bookmark Toolbar</div>
+                        <div class="menu-sep"></div>
+                        <div>New Toolbar...</div>
+                    </div>
+                </div>
+                <div data-options="iconCls:'icon-remove'">Delete</div>
+                <div>Select All</div>
+            </div>
+            <div id="mm2" style="width:100px;">
+                <div>Help</div>
+                <div>Update</div>
+                <div>About</div>
+            </div>
+            <div id="mm3" class="menu-content" style="background:#f0f0f0;padding:10px;text-align:left">
+                <img src="http://www.jeasyui.com/images/logo1.png" style="width:150px;height:50px">
+                <p style="font-size:14px;color:#444;">Try jQuery EasyUI to build your modern, interactive, javascript applications.</p>
+            </div>
+            -->
+        </div>
+        <div data-options="region:'west',split:true" style="width:240px;padding:5px;">
+            <ul id="project_tree" class="easyui-tree"
+                data-options="
+                    url:'/api/v1/project_list/',
+                    method:'get',
+                    queryParams: {},
+                    animate:true,
+                    lines:true,
+                    onBeforeExpand: onBeforeExpand,
+                    onContextMenu: onContextMenu,
+                    onDblClick: onDblClick
+                ">
+
+            </ul>
+        </div>
+        <!--<div data-options="region:'east',split:true,collapsed:true,title:'工具栏'" style="width:100px;padding:10px;">east region</div>-->
+        <!--
+        <div data-options="region:'south',border:false,split:true," style="height:150px;padding:0">
+            <div id="logger_tabs" class="easyui-tabs" style="width:100%;height:100%">
+                <div title="输出" style="padding:10px">
+                    <p style="font-size:14px">jQuery EasyUI framework helps you build your web pages easily.</p>
+                    <ul>
+                        <li>easyui is a collection of user-interface plugin based on jQuery.</li>
+                        <li>easyui provides essential functionality for building modem, interactive, javascript applications.</li>
+                        <li>using easyui you don't need to write many javascript code, you usually defines user-interface by writing some HTML markup.</li>
+                        <li>complete framework for HTML5 web page.</li>
+                        <li>easyui save your time and scales while developing your products.</li>
+                        <li>easyui is very easy but powerful.</li>
+                    </ul>
+                </div>
+                <div title="通知" style="padding:10px">
+                    <ul class="easyui-tree" data-options="url:'',method:'get',animate:true"></ul>
+                </div>
+            </div>
+
+        </div>
+        -->
+        <div data-options="region:'center'">
+            <div id="editor_tabs" class="easyui-tabs" style="width:100%;height:100%">
+
+            </div>
+
+        </div>
+
+        <div id="root_menu" class="easyui-menu" style="width:160px;">
+            <div onclick="addTab('欢迎页', '/welcome', 'icon-workspace');" data-options="iconCls:'icon-workspace'">欢迎页</div>
+            <div onclick="manage_project('create_project', 'create_project_ff', 'create')" data-options="iconCls:'icon-project'">创建项目</div>
+            <div class="menu-sep"></div>
+            <div onclick="expand()" data-options="iconCls:'icon-expand'">展开</div>
+            <div onclick="collapse()" data-options="iconCls:'icon-collapse'">折叠</div>
+            <div class="menu-sep"></div>
+            {% if username == "AutoLink" %}
+            <div onclick="addTab('用户管理', '/user', 'icon-user')" data-options="iconCls:'icon-user'">用户管理</div>
+            <div class="menu-sep"></div>
+            {% endif %}
+            <div onclick="do_logout('{{ username }}');" data-options="iconCls:'icon-logout'">退出</div>
+        </div>
+        <div id="project_menu" class="easyui-menu" style="width:160px;">
+            <div onclick="manage_suite('create_suite', 'create_suite_ff', 'create')" data-options="iconCls:'icon-suite'">创建目录</div>
+            <div class="menu-sep"></div>
+            <div onclick="do_run();" data-options="iconCls:'icon-run'">运行</div>
+            <div onclick="do_task_list();" data-options="iconCls:'icon-task'">查看任务</div>
+            <!--<div onclick="manage_project('edit_project', 'edit_project_ff', 'edit')" data-options="iconCls:'icon-debug'">调试</div>-->
+            <!--<div onclick="addTab('任务管理', '#', 'icon-task')" data-options="iconCls:'icon-task'">任务管理</div>-->
+            <div class="menu-sep"></div>
+            <div onclick="manage_project('edit_project', 'edit_project_ff', 'edit')">重命名</div>
+            <div onclick="delete_project()" data-options="iconCls:'icon-remove'">删除</div>
+            <div class="menu-sep"></div>
+            <div onclick="expand()" data-options="iconCls:'icon-expand'">展开</div>
+            <div onclick="collapse()" data-options="iconCls:'icon-collapse'">折叠</div>
+        </div>
+        <div id="suite_menu" class="easyui-menu" style="width:160px;">
+            <div onclick="manage_file('create_file', 'create_file_ff', 'create')">创建文件</div>
+            <div onclick="open_win('upload_win');">上传文件</div>
+            <div class="menu-sep"></div>
+            <div onclick="do_run();" data-options="iconCls:'icon-run'">运行</div>
+            <div class="menu-sep"></div>
+            <div onclick="manage_suite('edit_suite', 'edit_suite_ff', 'edit')">重命名</div>
+            <div onclick="delete_suite()" data-options="iconCls:'icon-remove'">删除</div>
+            <div class="menu-sep"></div>
+            <div onclick="expand()" data-options="iconCls:'icon-expand'">展开</div>
+            <div onclick="collapse()" data-options="iconCls:'icon-collapse'">折叠</div>
+        </div>
+        <div id="case_menu" class="easyui-menu" style="width:160px;">
+            <div onclick="do_open_editor();">打开</div>
+            <div onclick="do_download('download_ff');">下载</div>
+            <div class="menu-sep"></div>
+            <div onclick="do_run();" data-options="iconCls:'icon-run'">运行</div>
+            <div class="menu-sep"></div>
+            <div onclick="manage_file('edit_file', 'edit_file_ff', 'edit')">重命名</div>
+            <div onclick="delete_file()" data-options="iconCls:'icon-remove'">删除</div>
+        </div>
+        <!-- project start -->
+        <div id="create_project" class="easyui-window" title="创建项目"
+             data-options="modal:true,closed:true,minimizable:false,maximizable:false,collapsible:false"
+             style="width:400px;height:170px;padding:10px;">
+            <form id="create_project_ff" method="post">
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="name" name="name" label="名称" labelPosition="top" style="width:100%" data-options="required:true">
+                </div>
+            </form>
+            <div style="text-align:right;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="close_win('create_project')" style="width:60px">取消</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="create_project('create_project', 'create_project_ff')" style="width:60px">创建</a>
+            </div>
+        </div>
+        <div id="edit_project" class="easyui-window" title="项目重命名"
+             data-options="modal:true,closed:true,minimizable:false,maximizable:false,collapsible:false"
+             style="width:400px;height:170px;padding:10px;">
+            <form id="edit_project_ff" method="post">
+                <div style="margin-bottom:10px;text-align:center">
+                    <input class="easyui-textbox" id="new_name" name="new_name" style="width:100%;" labelPosition="top" data-options="label:'名称',required:true">
+                </div>
+            </form>
+            <div style="text-align:right;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="close_win('edit_project')" style="width:60px">取消</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="rename_project('edit_project', 'edit_project_ff')" style="width:60px">保存</a>
+            </div>
+        </div>
+        <!-- project end -->
+
+        <!-- suite start -->
+        <div id="create_suite" class="easyui-window" title="创建目录"
+             data-options="modal:true,closed:true,minimizable:false,maximizable:false,collapsible:false"
+             style="width:400px;height:170px;padding:10px;">
+            <form id="create_suite_ff" method="post">
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="name" name="name" label="名称" labelPosition="top" style="width:100%" data-options="required:true">
+                </div>
+            </form>
+            <div style="text-align:right;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="close_win('create_suite')" style="width:60px">取消</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="create_suite('create_suite', 'create_suite_ff')" style="width:60px">创建</a>
+            </div>
+        </div>
+        <div id="edit_suite" class="easyui-window" title="目录重命名"
+             data-options="modal:true,closed:true,minimizable:false,maximizable:false,collapsible:false"
+             style="width:400px;height:170px;padding:10px;">
+            <form id="edit_suite_ff" method="post">
+                <div style="margin-bottom:10px;text-align:center">
+                    <input class="easyui-textbox" id="new_name" name="new_name" style="width:100%;" labelPosition="top" data-options="label:'名称',required:true">
+                </div>
+            </form>
+            <div style="text-align:right;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="close_win('edit_suite')" style="width:60px">取消</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="rename_suite('edit_suite', 'edit_suite_ff')" style="width:60px">保存</a>
+            </div>
+        </div>
+        <!-- suite end -->
+
+        <!-- file start -->
+        <div id="create_file" class="easyui-window" title="创建文件"
+             data-options="modal:true,closed:true,minimizable:false,maximizable:false,collapsible:false"
+             style="width:400px;height:240px;padding:10px;">
+            <form id="create_file_ff" method="post">
+                <div style="margin-bottom:10px">
+                    <select class="easyui-combobox" id="category" name="category" label="类型" labelPosition="top" style="width:100%" data-options="required:true">
+                        <option value=".txt">资源文件(.txt)</option>
+                        <option value=".robot">用例文件(.robot)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="name" name="name" label="名称" labelPosition="top" style="width:100%" data-options="required:true">
+                </div>
+            </form>
+            <div style="text-align:right;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="close_win('create_file')" style="width:60px">取消</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="create_file('create_file', 'create_file_ff')" style="width:60px">创建</a>
+            </div>
+        </div>
+        <div id="edit_file" class="easyui-window" title="文件重命名"
+             data-options="modal:true,closed:true,minimizable:false,maximizable:false,collapsible:false"
+             style="width:400px;height:240px;padding:10px;">
+            <form id="edit_file_ff" method="post">
+                <div style="margin-bottom:10px">
+                    <select class="easyui-combobox" id="new_category" name="new_category" label="类型" labelPosition="top" style="width:100%" data-options="required:true">
+                        <option value=".txt">资源文件(.txt)</option>
+                        <option value=".robot">用例文件(.robot)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="new_name" name="new_name" label="名称" labelPosition="top" style="width:100%" data-options="required:true">
+                </div>
+            </form>
+            <div style="text-align:right;padding:5px 0">
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="close_win('edit_file')" style="width:60px">取消</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton" onclick="rename_file('edit_file', 'edit_file_ff')" style="width:60px">保存</a>
+            </div>
+        </div>
+        <!-- file end -->
+
+        <!-- file upload start -->
+        <div id="upload_win" class="easyui-window" title="文件上传"
+         data-options="modal:true,closed:true,minimizable:false,maximizable:false,collapsible:false,iconCls:'icon-case'"
+            style="width:500px;height:140px;padding:10px;">
+            <form id="upload_ff" method="POST" action="/api/v1/manage_file/" enctype="multipart/form-data">
+                <div style="margin-bottom:20px">
+                    <input name="method" id="method" value="upload" hidden>
+                    <input name="path" id="path" value="/" hidden>
+                    <input id="files" name="files" class="easyui-filebox" label="" labelPosition="top"
+                           data-options="prompt:'请选择一个文件...',buttonText:'选择'" style="width:100%">
+                </div>
+                <div style="text-align:right;">
+                    <a href="#" class="easyui-linkbutton" style="width:80px;" onclick="do_upload('upload_win', 'upload_ff')">上 传</a>
+                </div>
+
+            </form>
+        </div>
+        <!-- file upload end -->
+
+        <!-- file download -->
+        <form id="download_ff" method="post" action="/api/v1/manage_file/">
+            <input name="method" id="method" value="download" hidden>
+            <input name="path" id="path" value="/" hidden>
+        </form>
+        <!-- file download end-->
+
+
+
+        <script src="{{ url_for('static', filename='lib/easyui/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='lib/easyui/jquery.easyui.min.js') }}"></script>
+        <!-- 自定义js库 -->
+        <script type="text/javascript" src="{{ url_for('static', filename='js/auto.js') }}"></script>
+    </body>
+    <SCRIPT type="text/javascript">
+        $(function () {
+            addTab("欢迎页", "/welcome", "icon-workspace");
+        });
+    </SCRIPT>
+</html>
